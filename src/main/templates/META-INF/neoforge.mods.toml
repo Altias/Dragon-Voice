@@ -1,0 +1,33 @@
+modLoader = "javafml" #mandatory
+loaderVersion = "${loader_version_range}" #mandatory
+license = "${mod_license}"
+[[mods]] #mandatory
+modId = "${mod_id}" #mandatory
+version = "${mod_version}" #mandatory
+displayName = "${mod_name}" #mandatory
+authors = "${mod_authors}" #optional
+
+description = '''${mod_description}'''
+
+[[dependencies."${mod_id}"]] #optional
+modId = "neoforge"
+type = "required"
+versionRange = "${neo_version_range}"
+ordering = "NONE"
+side = "BOTH"
+
+[[dependencies."${mod_id}"]]
+modId = "minecraft"
+type = "required"
+versionRange = "${minecraft_version_range}"
+ordering = "NONE"
+side = "BOTH"
+
+[[dependencies."${mod_id}"]]
+modId="voicechat_api"
+mandatory=true
+# Note that the mod ID "voicechat_api" was introduced with API version 2.6.0 - For older versions you need to depend on the mod ID "voicechat"
+versionRange="[${voicechat_api_version},)"
+ordering="AFTER"
+side="BOTH"
+
