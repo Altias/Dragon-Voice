@@ -15,6 +15,7 @@ import de.maxhenkel.voicechat.api.VoicechatConnection;
 import de.maxhenkel.voicechat.api.VoicechatPlugin;
 import de.maxhenkel.voicechat.api.events.EventRegistration;
 import de.maxhenkel.voicechat.api.events.MicrophonePacketEvent;
+import net.altias.dragon_voice.Dragon_voice;
 import net.altias.dragon_voice.VoiceState;
 import net.minecraft.core.Holder;
 import net.minecraft.core.Registry;
@@ -80,7 +81,7 @@ public class DragonVoicePlugin implements VoicechatPlugin {
         Holder.Reference<DragonEmoteSet> holder =
                 registry.getHolderOrThrow(DragonEmoteSets.DEFAULT_EMOTES);
         DragonEmoteSet set = holder.value();
-        DragonEmote talk = set.getEmote(DragonEmoteSets.BLEND_TALK);
+        DragonEmote talk = VoiceState.getTalkEmote(player);
 
         if (!dragon.isPlayingEmote(talk)) {
             dragon.beginPlayingEmote(talk);

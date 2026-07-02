@@ -1,27 +1,13 @@
 package net.altias.dragon_voice;
 
 import by.dragonsurvivalteam.dragonsurvival.client.render.ClientDragonRenderer;
+import by.dragonsurvivalteam.dragonsurvival.common.capability.DragonStateHandler;
+import by.dragonsurvivalteam.dragonsurvival.common.capability.DragonStateProvider;
 import by.dragonsurvivalteam.dragonsurvival.common.entity.DragonEntity;
 import by.dragonsurvivalteam.dragonsurvival.registry.dragon.body.emotes.DragonEmote;
-import by.dragonsurvivalteam.dragonsurvival.registry.dragon.body.emotes.DragonEmoteSet;
-import by.dragonsurvivalteam.dragonsurvival.registry.dragon.body.emotes.DragonEmoteSets;
 import com.mojang.logging.LogUtils;
-import net.altias.dragon_voice.plugin.DragonVoicePlugin;
-import net.minecraft.client.Minecraft;
-import net.minecraft.core.Registry;
-import net.minecraft.core.registries.BuiltInRegistries;
-import net.minecraft.core.registries.Registries;
-import net.minecraft.network.chat.Component;
+import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.level.ServerPlayer;
-import net.minecraft.world.food.FoodProperties;
-import net.minecraft.world.item.BlockItem;
-import net.minecraft.world.item.CreativeModeTab;
-import net.minecraft.world.item.CreativeModeTabs;
-import net.minecraft.world.item.Item;
-import net.minecraft.world.level.block.Block;
-import net.minecraft.world.level.block.Blocks;
-import net.minecraft.world.level.block.state.BlockBehaviour;
-import net.minecraft.world.level.material.MapColor;
 import net.neoforged.api.distmarker.Dist;
 import net.neoforged.bus.api.IEventBus;
 import net.neoforged.bus.api.SubscribeEvent;
@@ -29,17 +15,17 @@ import net.neoforged.fml.ModContainer;
 import net.neoforged.fml.common.EventBusSubscriber;
 import net.neoforged.fml.common.Mod;
 import net.neoforged.fml.config.ModConfig;
+import net.neoforged.fml.event.config.ModConfigEvent;
 import net.neoforged.fml.event.lifecycle.FMLClientSetupEvent;
 import net.neoforged.fml.event.lifecycle.FMLCommonSetupEvent;
 import net.neoforged.neoforge.common.NeoForge;
 import net.neoforged.neoforge.event.BuildCreativeModeTabContentsEvent;
 import net.neoforged.neoforge.event.server.ServerStartingEvent;
 import net.neoforged.neoforge.event.tick.ServerTickEvent;
-import net.neoforged.neoforge.registries.DeferredBlock;
-import net.neoforged.neoforge.registries.DeferredHolder;
-import net.neoforged.neoforge.registries.DeferredItem;
-import net.neoforged.neoforge.registries.DeferredRegister;
 import org.slf4j.Logger;
+import java.util.Map;
+import java.util.HashMap;
+import net.altias.dragon_voice.Config;
 
 import java.util.Iterator;
 import java.util.UUID;
@@ -55,6 +41,8 @@ public class Dragon_voice {
         modEventBus.addListener(this::commonSetup);
 
         NeoForge.EVENT_BUS.register(this);
+
+        modContainer.registerConfig(ModConfig.Type.COMMON, Config.SPEC);
 
     }
 
@@ -91,16 +79,10 @@ public class Dragon_voice {
 
                 ServerPlayer player = event.getServer().getPlayerList().getPlayer(uuid);
 
-                if (player != null) {
+                if (player != null && DragonStateProvider.isDragon(player)) {
                     DragonEntity dragon = ClientDragonRenderer.getDragon(player);
 
-                    Registry<DragonEmoteSet> registry =
-                            player.registryAccess().registryOrThrow(DragonEmoteSet.REGISTRY);
-
-                    DragonEmote talk = registry
-                            .getHolderOrThrow(DragonEmoteSets.DEFAULT_EMOTES)
-                            .value()
-                            .getEmote(DragonEmoteSets.BLEND_TALK);
+                    DragonEmote talk = VoiceState.getTalkEmote(player);
 
                     if (dragon.isPlayingEmote(talk)) {
                         int slot = getPlayingEmoteSlot(talk,dragon.getCurrentlyPlayingEmotes());
